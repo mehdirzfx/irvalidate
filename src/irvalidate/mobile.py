@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import re
-from typing import Optional
+from typing import Dict, List, Optional
 
-from ._digits import clean
+from ._digits import clean, is_ascii_digits
+from ._result import ValidationResult, fail, success
 
-_RE = re.compile(r"^(?:\+98|0098|98|0)?(9\d{9})$")
+_RE = re.compile(r"^(?:\+98|0098|98|0)?(9[0-9]{9})$")
 
 # پیش‌شماره‌های شناخته‌شده (بر اساس تخصیص عمومی؛ ممکن است ناقص باشد)
-_OPERATOR_PREFIXES = {
+OPERATOR_PREFIXES: Dict[str, List[str]] = {
     "MCI": ["091" + str(i) for i in range(10)] + ["0990", "0991", "0992", "0993", "0994"],
     "Irancell": ["0930", "0933", "0935", "0936", "0937", "0938", "0939", "0941"]
     + ["090" + str(i) for i in range(6)],
@@ -18,28 +19,40 @@ _OPERATOR_PREFIXES = {
     "Shatel Mobile": ["0998"],
     "Aptel": ["0999"],
 }
-_PREFIX_TO_OPERATOR = {p: op for op, prefixes in _OPERATOR_PREFIXES.items() for p in prefixes}
+_PREFIX_TO_OPERATOR = {p: op for op, prefixes in OPERATOR_PREFIXES.items() for p in prefixes}
+
+
+def validate_mobile(value: object) -> ValidationResult:
+    """Validate an Iranian mobile number and say why it failed, if so.
+
+    Accepts 09121234567, 9121234567, 989121234567, +989121234567,
+    00989121234567 و ارقام فارسی. مقدار نرمال‌شده: ``09121234567``.
+    """
+    if not isinstance(value, str):
+        return fail("not_a_string", "mobile")
+    s = clean(value) or ""
+    if not s:
+        return fail("empty", "mobile")
+    body = s[1:] if s.startswith("+") else s
+    if not is_ascii_digits(body):
+        return fail("invalid_characters", "mobile")
+    m = _RE.match(s)
+    if not m:
+        return fail("invalid_format", "mobile")
+    return success("0" + m.group(1))
 
 
 def normalize_mobile(value: object, international: bool = False) -> Optional[str]:
-    """Normalize to ``09xxxxxxxxx`` (or ``+989xxxxxxxxx`` if ``international``).
-
-    Accepts: 09121234567, 9121234567, 989121234567, +989121234567,
-    00989121234567 و ارقام فارسی. Returns None if not a valid mobile format.
-    """
-    s = clean(value)
-    if s is None:
+    """Normalize to ``09xxxxxxxxx`` (or ``+989xxxxxxxxx`` if ``international``)."""
+    res = validate_mobile(value)
+    if not res.ok or res.value is None:
         return None
-    m = _RE.match(s)
-    if not m:
-        return None
-    local = m.group(1)
-    return f"+98{local}" if international else f"0{local}"
+    return "+98" + res.value[1:] if international else res.value
 
 
 def is_valid_mobile(value: object) -> bool:
     """Check that ``value`` is a well-formed Iranian mobile number."""
-    return normalize_mobile(value) is not None
+    return validate_mobile(value).ok
 
 
 def mobile_operator(value: object) -> Optional[str]:
@@ -48,3 +61,11 @@ def mobile_operator(value: object) -> Optional[str]:
     if n is None:
         return None
     return _PREFIX_TO_OPERATOR.get(n[:4])
+
+
+def format_mobile(value: object, sep: str = " ") -> Optional[str]:
+    """09123456789 -> '0912 345 6789' (None if malformed)."""
+    n = normalize_mobile(value)
+    if n is None:
+        return None
+    return sep.join((n[:4], n[4:7], n[7:]))

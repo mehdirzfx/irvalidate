@@ -133,3 +133,36 @@ SHEBA_CODES: Dict[str, Bank] = {
     "080": NOOR,
     "090": MEHR_EGHTESAD,
 }
+
+
+def all_banks() -> "list[Bank]":
+    """Unique banks known from card BINs and Sheba codes (stable order)."""
+    seen: "list[Bank]" = []
+    for bank in list(CARD_BINS.values()) + list(SHEBA_CODES.values()):
+        if bank not in seen:
+            seen.append(bank)
+    return seen
+
+
+def resolve_bank(bank: "Bank | str") -> Bank:
+    """Find a :class:`Bank` from a Bank object or a (partial) English/Persian name.
+
+    Raises ``ValueError`` if nothing matches or if the name is ambiguous.
+    """
+    if isinstance(bank, Bank):
+        return bank
+    if not isinstance(bank, str) or not bank.strip():
+        raise ValueError(f"invalid bank: {bank!r}")
+    needle = bank.strip()
+    low = needle.lower()
+    banks = all_banks()
+    exact = [b for b in banks if b.name_en.lower() == low or b.name_fa == needle]
+    if len(exact) == 1:
+        return exact[0]
+    partial = [b for b in banks if low in b.name_en.lower() or needle in b.name_fa]
+    if len(partial) == 1:
+        return partial[0]
+    if not partial:
+        raise ValueError(f"unknown bank: {bank!r}")
+    names = ", ".join(b.name_en for b in partial)
+    raise ValueError(f"ambiguous bank {bank!r}; matches: {names}")
