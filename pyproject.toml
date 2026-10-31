@@ -38,6 +38,8 @@ irvalidate = "irvalidate.cli:main"
 [project.urls]
 Homepage = "https://github.com/mehdirzfx/irvalidate"
 Issues = "https://github.com/mehdirzfx/irvalidate/issues"
+Changelog = "https://github.com/mehdirzfx/irvalidate/blob/main/CHANGELOG.md"
+Persian-README = "https://github.com/mehdirzfx/irvalidate/blob/main/README.fa.md"
 
 [tool.hatch.version]
 path = "src/irvalidate/__init__.py"

@@ -1,87 +1,163 @@
-# irvalidate
+<p align="center">
+  <img src="https://raw.githubusercontent.com/mehdirzfx/irvalidate/main/assets/banner.svg" alt="irvalidate: Validate Iranian data. Zero dependencies." width="100%">
+</p>
 
-[![CI](https://github.com/mehdirzfx/irvalidate/actions/workflows/ci.yml/badge.svg)](https://github.com/mehdirzfx/irvalidate/actions)
-[![PyPI](https://img.shields.io/pypi/v/irvalidate.svg)](https://pypi.org/project/irvalidate/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+<p align="center">
+  <b>English</b> &nbsp;·&nbsp; <a href="https://github.com/mehdirzfx/irvalidate/blob/main/README.fa.md">فارسی</a>
+</p>
 
-کتابخانه‌ی سبک و **بدون وابستگی** پایتون برای اعتبارسنجی داده‌های ایرانی:
-کد ملی، شناسه ملی شرکت، شماره کارت، شبا، موبایل، تلفن ثابت و کد پستی؛
-با پیام خطای فارسی، تولید داده‌ی تستی و ولیدیتور آماده برای Pydantic/FastAPI، Django و WTForms.
+<p align="center">
+  <a href="https://github.com/mehdirzfx/irvalidate/actions"><img alt="CI" src="https://github.com/mehdirzfx/irvalidate/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://pypi.org/project/irvalidate/"><img alt="PyPI" src="https://img.shields.io/pypi/v/irvalidate.svg"></a>
+  <a href="https://pypi.org/project/irvalidate/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/irvalidate.svg"></a>
+  <a href="https://pypi.org/project/irvalidate/"><img alt="Downloads" src="https://img.shields.io/pypi/dm/irvalidate.svg"></a>
+  <img alt="Dependencies: 0" src="https://img.shields.io/badge/dependencies-0-brightgreen">
+  <img alt="Typed" src="https://img.shields.io/badge/typing-typed-blue">
+  <a href="https://github.com/mehdirzfx/irvalidate/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green.svg"></a>
+</p>
 
-*A tiny, zero-dependency Python library for validating Iranian data (national ID, legal ID, bank card, Sheba/IBAN, mobile, landline, postal code), with Persian/English error messages, test-data generators and ready-made Pydantic/FastAPI, Django and WTForms validators.*
+<p align="center">
+  <b>Validate Iranian national IDs, bank cards, Sheba numbers, mobiles, landlines and postal codes,<br>
+  in one tiny, typed, zero-dependency package.</b>
+</p>
 
-## نصب
+<p align="center" dir="rtl">
+  اعتبارسنجی کد ملی، کارت، شبا، موبایل، تلفن ثابت و کد پستی؛ در یک پکیج کوچک، تایپ‌شده و بدون هیچ وابستگی
+</p>
+
+---
+
+## ⚡ 30-second demo
+
+```python
+from irvalidate import (
+    validate_national_id, is_valid_sheba, card_bank, mobile_operator, landline_area,
+)
+
+validate_national_id("۰۰۱۳۵۴۲۴۱۹").value             # '0013542419'
+validate_national_id("1234567890").code              # 'bad_checksum'
+validate_national_id("1234567890").message_en        # 'national ID is invalid (checksum mismatch)'
+is_valid_sheba("IR58 0540 1051 8002 1273 1130 07")  # True
+card_bank("6037-9910-0000-0004").name_en             # 'Bank Melli Iran'
+mobile_operator("+98 935 123 4567")                  # 'Irancell'
+landline_area("021-22345678").province_en            # 'Tehran'
+```
+
+Persian digits, spaces, dashes and `+98` prefixes just work. And when something is
+invalid, you get **the reason**, not just `False`.
+
+```console
+$ pip install irvalidate
+
+$ irvalidate card 6037991000000004
+valid
+bank: بانک ملی ایران (Bank Melli Iran)
+
+$ irvalidate national-id 1234567890
+invalid
+reason: bad_checksum (national ID is invalid (checksum mismatch))
+```
+
+## ✨ Why irvalidate?
+
+| | A copy-pasted snippet | **irvalidate** |
+|---|:---:|:---:|
+| Persian / Arabic digits (۰-۹) | usually ✗ | ✅ |
+| Spaces, dashes, `+98`, `0098` in input | do it yourself | ✅ |
+| Real checksums (national ID, Luhn, mod-97) | often just a regex | ✅ |
+| Rejects `1111111111` and friends | easy to forget | ✅ |
+| Tells you **why** it failed (code + Persian/English message) | ✗ | ✅ |
+| Bank, mobile operator, province lookup | ✗ | ✅ |
+| Pydantic / FastAPI, Django, WTForms | write it yourself | ✅ |
+| Valid test-data generators | ✗ | ✅ |
+| Runtime dependencies | n/a | **0** |
+| Works offline (no network, no data leaves your machine) | n/a | ✅ |
+
+## 🔍 What it validates
+
+| Data | What is verified | Extras |
+|---|---|---|
+| **National ID** (کد ملی) | 10 digits, checksum, not all-same digits | |
+| **Legal ID** (شناسه ملی شرکت) | 11 digits, checksum | |
+| **Bank card** (شماره کارت) | 16 digits, Luhn | issuing bank from 44 BIN prefixes |
+| **Sheba** (شبا) | `IR` + 24 digits, ISO 7064 mod-97 (`IR` is optional) | bank from 36 bank codes |
+| **Mobile** (موبایل) | `09…`, `9…`, `98…`, `+98…`, `0098…` | normalization, operator (MCI, Irancell, Rightel, Taliya, Shatel Mobile, Aptel) |
+| **Landline** (تلفن ثابت) | area code + 8-digit number | province from all 31 area codes |
+| **Postal code** (کد پستی) | 10-digit format rules | |
+
+## 📦 Install
 
 ```bash
 pip install irvalidate
 
-# با یکپارچگی فریم‌ورک موردنظر
+# optional framework integrations
 pip install "irvalidate[pydantic]"   # Pydantic v2 / FastAPI
 pip install "irvalidate[django]"
 pip install "irvalidate[wtforms]"
 ```
 
-یا مستقیم از گیت‌هاب: `pip install git+https://github.com/mehdirzfx/irvalidate.git`
+Or straight from GitHub: `pip install git+https://github.com/mehdirzfx/irvalidate.git`
 
-نیازمند پایتون ۳.۹ به بالا.
+Requires Python 3.9+. The core has no dependencies.
 
-## استفاده‌ی سریع
+## 🚀 Quick start
+
+Every kind has an `is_valid_*` (returns `bool`) and a `validate_*` (returns a result with the reason).
 
 ```python
 from irvalidate import (
     is_valid_national_id, is_valid_legal_id, is_valid_card_number,
     is_valid_sheba, is_valid_mobile, is_valid_landline, is_valid_postal_code,
-    card_bank, sheba_bank, mobile_operator, landline_area, normalize_mobile,
+    normalize_mobile, normalize_landline,
 )
 
-is_valid_national_id("0013542419")      # True
-is_valid_national_id("۰۰۱۳۵۴۲۴۱۹")      # True  (ارقام فارسی هم پشتیبانی می‌شود)
-is_valid_legal_id("14003778990")        # True  (شناسه ملی شرکت‌ها)
+is_valid_national_id("0013542419")           # True
+is_valid_national_id("1234567890")           # False
+is_valid_legal_id("14003778990")             # True
+is_valid_card_number("6037-9910-0000-0004")  # True
+is_valid_sheba("IR580540105180021273113007") # True
+is_valid_mobile("+98 912 345 6789")          # True
+is_valid_landline("021-22345678")            # True
+is_valid_postal_code("1593764856")           # True
 
-is_valid_card_number("6037-9910-0000-0004")        # True
-card_bank("6037991000000004").name_fa              # 'بانک ملی ایران'
-
-is_valid_sheba("IR580540105180021273113007")       # True (پیشوند IR اختیاری است)
-sheba_bank("IR580540105180021273113007").name_en   # 'Parsian Bank'
-
-is_valid_mobile("+98 912 345 6789")                # True
-normalize_mobile("۰۹۱۲۳۴۵۶۷۸۹")                     # '09123456789'
-mobile_operator("09351234567")                     # 'Irancell'
-
-is_valid_landline("021-22345678")                  # True
-landline_area("02122345678").province_fa           # 'تهران'
-
-is_valid_postal_code("1593764856")                 # True
+normalize_mobile("۰۹۱۲۳۴۵۶۷۸۹")               # '09123456789'
+normalize_mobile("09123456789", international=True)  # '+989123456789'
+normalize_landline("+982122345678")          # '02122345678'
 ```
 
-## دلیل خطا
-
-توابع `validate_*` به‌جای فقط `False`، دلیل را هم می‌گویند:
+## 🧭 Know *why* it failed
 
 ```python
 from irvalidate import validate_national_id, set_default_language
 
 r = validate_national_id("1234567890")
-bool(r)          # False
-r.code           # 'bad_checksum'
-r.message        # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
-r.message_en     # 'national ID is invalid (checksum mismatch)'
+bool(r)           # False
+r.code            # 'bad_checksum'
+r.message         # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
+r.message_en      # 'national ID is invalid (checksum mismatch)'
 
 ok = validate_national_id("۰۰۱۳۵۴۲۴۱۹")
-ok.value         # '0013542419'  (مقدار نرمال‌شده)
+ok.value          # '0013542419'
+ok.raise_for_error()   # returns the normalized value, or raises ValidationError (a ValueError)
 
-ok.raise_for_error()   # مقدار نرمال‌شده را برمی‌گرداند، یا ValidationError (زیرکلاس ValueError)
-
-set_default_language("en")   # زبان پیش‌فرض r.message و پیام‌های فریم‌ورک‌ها
+set_default_language("en")
+r.message         # 'national ID is invalid (checksum mismatch)'
 ```
 
-کدهای خطا: `not_a_string`، `empty`، `invalid_characters`، `invalid_length`، `all_same_digits`،
-`bad_checksum`، `invalid_format`، `unknown_area_code`.
+`r.message` follows the default language (Persian out of the box); `message_fa` and `message_en` are always available.
 
-برای هر نوع، `validate_national_id`، `validate_legal_id`، `validate_card_number`،
-`validate_sheba`، `validate_mobile`، `validate_landline` و `validate_postal_code` وجود دارد.
+| `code` | Meaning |
+|---|---|
+| `not_a_string` | the input isn't a `str` (e.g. an `int`, which would lose leading zeros) |
+| `empty` | nothing left after removing spaces and dashes |
+| `invalid_characters` | something other than digits |
+| `invalid_length` | wrong number of digits |
+| `all_same_digits` | e.g. `1111111111` |
+| `bad_checksum` | checksum / Luhn / mod-97 mismatch |
+| `invalid_format` | wrong shape (mobile, landline, postal code) |
+| `unknown_area_code` | landline area code doesn't exist |
 
-## یکپارچگی با فریم‌ورک‌ها
+## 🔌 Framework integrations
 
 ### Pydantic / FastAPI
 
@@ -91,7 +167,7 @@ from pydantic import BaseModel
 from irvalidate.integrations.pydantic import NationalId, MobileNumber
 
 class User(BaseModel):
-    national_id: NationalId   # "۰۰۱۳۵۴۲۴۱۹" -> "0013542419"
+    national_id: NationalId   # "۰۰۱۳۵۴۲۴۱۹"       -> "0013542419"
     mobile: MobileNumber      # "+98 912 345 6789" -> "09123456789"
 
 app = FastAPI()
@@ -101,8 +177,8 @@ def create(user: User):
     return user
 ```
 
-انواع موجود: `NationalId`، `LegalId`، `CardNumber`، `Sheba`، `MobileNumber`، `PostalCode`، `Landline`.
-مقدار خروجی همیشه نرمال‌شده است. ورودی باید رشته باشد.
+Invalid input returns a `422` whose message is the Persian (or English) reason. The values you receive are already normalized.
+Types: `NationalId`, `LegalId`, `CardNumber`, `Sheba`, `MobileNumber`, `PostalCode`, `Landline`.
 
 ### Django
 
@@ -115,8 +191,8 @@ class Profile(models.Model):
     mobile = models.CharField(max_length=14, validators=[mobile_validator])
 ```
 
-کد خطا در `ValidationError.code` قرار می‌گیرد. ولیدیتورها: `national_id_validator`، `legal_id_validator`،
-`card_number_validator`، `sheba_validator`، `mobile_validator`، `postal_code_validator`، `landline_validator`.
+The error code lands in `ValidationError.code`. Validators are plain module-level functions, so they serialize cleanly in migrations.
+Available: `national_id_validator`, `legal_id_validator`, `card_number_validator`, `sheba_validator`, `mobile_validator`, `postal_code_validator`, `landline_validator`.
 
 ### WTForms
 
@@ -126,73 +202,97 @@ from irvalidate.integrations.wtforms import NationalId, MobileNumber
 
 class SignupForm(Form):
     national_id = StringField(validators=[NationalId()])
-    mobile = StringField(validators=[MobileNumber(message="موبایل درست نیست")])
+    mobile = StringField(validators=[MobileNumber(message="Invalid mobile number")])
 ```
 
-## تولید داده‌ی تستی
+## 🧪 Test-data generators
+
+Need valid-looking fake data for tests and fixtures?
 
 ```python
 import random
 from irvalidate import (
     generate_national_id, generate_legal_id, generate_card_number, generate_sheba,
-    generate_mobile, generate_landline, generate_postal_code,
+    generate_mobile, generate_landline, generate_postal_code, is_valid_sheba,
 )
 
-generate_national_id()                        # '1043321810' (نمونه‌ی تصادفی معتبر)
-generate_card_number(bank="Mellat")           # کارت معتبر با BIN بانک ملت
-generate_sheba(bank="ملی")                    # شبای معتبر بانک ملی
-generate_mobile("Irancell")                   # '0937xxxxxxx'
-generate_landline("021")                      # '021xxxxxxxx'
+generate_national_id()                 # e.g. 1043321810
+generate_card_number(bank="Mellat")    # a valid card with a Mellat BIN
+generate_sheba(bank="Parsian")         # a valid Sheba for Parsian
+generate_mobile("Irancell")            # e.g. 09359141777
+generate_landline("021")               # a Tehran landline
 
-rng = random.Random(42)                       # نتیجه‌ی تکرارپذیر
-generate_national_id(rng=rng)
+rng = random.Random(42)                # reproducible output
+is_valid_sheba(generate_sheba(rng=rng))  # True
 ```
 
-> مقادیر تولیدشده فقط از نظر **ساختار و رقم کنترلی** معتبرند و برای داده‌ی فیک در تست‌اند. ممکن است تصادفاً با مقدار واقعی کسی یکی باشند؛ برای جعل هویت یا کارهای مشابه استفاده نکنید. تولیدکننده‌ی پیش‌فرض برای امنیت مناسب نیست.
+> Generated values are valid in **shape and checksum only**, for tests and fake data. They may coincide with a real person's number, so never use them to impersonate anyone. The default random source is not cryptographically secure.
 
-## فرمت و ماسک
+## 🎨 Format, mask & normalize
 
 ```python
 from irvalidate import (
-    mask_card_number, format_card_number, format_sheba, format_mobile,
-    format_landline, to_persian_digits,
+    mask_card_number, format_card_number, format_sheba,
+    format_mobile, format_landline, to_persian_digits,
 )
 
-mask_card_number("6037991000000004")     # '6037-99**-****-0004'
-format_card_number("6037991000000004")   # '6037-9910-0000-0004'
+mask_card_number("6037991000000004")        # '6037-99**-****-0004'
+format_card_number("6037991000000004")      # '6037-9910-0000-0004'
 format_sheba("IR580540105180021273113007")  # 'IR58 0540 1051 8002 1273 1130 07'
-format_mobile("+989123456789")           # '0912 345 6789'
-format_landline("02122345678")           # '021-22345678'
-to_persian_digits("0912")                # '۰۹۱۲'
+format_mobile("+989123456789")              # '0912 345 6789'
+format_landline("02122345678")              # '021-22345678'
+to_persian_digits("0912")                   # '۰۹۱۲'
 ```
 
-## تلفن ثابت
-
-شماره‌ی ثابت = پیش‌شماره‌ی استان + شماره‌ی ۸ رقمی (که با ۰ یا ۱ شروع نمی‌شود). پیش‌شماره‌ی هر ۳۱ استان در `irvalidate.landline.AREA_CODES` هست.
-فرمت‌های `02122345678`، `2122345678`، `+982122345678` و `00982122345678` پذیرفته می‌شوند.
-شماره‌های قدیمیِ ۷ رقمی و شماره‌های خدماتی (مثل ۱۱۰) پشتیبانی نمی‌شوند.
-
-## خط فرمان
+## 💻 Command line
 
 ```bash
 irvalidate national-id 0013542419
-irvalidate card 6037991000000004
 irvalidate sheba IR580540105180021273113007
-irvalidate national-id 1234567890      # invalid + reason: bad_checksum
-irvalidate card --generate             # یک کارت معتبر تستی
-# انواع: national-id, legal-id, card, sheba, mobile, landline, postal-code
+irvalidate mobile +989351234567     # valid + operator: Irancell
+irvalidate landline 02122345678     # valid + province: تهران (Tehran)
+irvalidate card --generate          # print a valid test card number
+# kinds: national-id, legal-id, card, sheba, mobile, landline, postal-code
 ```
 
-کد خروج ۰ (معتبر) یا ۱ (نامعتبر) است و برای اسکریپت‌ها مناسب است.
+Exit code is `0` for valid and `1` for invalid, so it works in shell scripts.
 
-## نکات مهم
+## 📚 API cheat sheet
 
-- **ورودی را رشته بدهید، نه عدد.** کد ملی‌هایی که با صفر شروع می‌شوند در تبدیل به عدد خراب می‌شوند؛ ورودی غیررشته‌ای نامعتبر (`not_a_string`) است.
-- فاصله، خط تیره، نیم‌فاصله و پرانتز نادیده گرفته می‌شوند. فقط ارقام ۰-۹ و فارسی/عربی مجازند.
-- **معتبر بودن ≠ وجود داشتن.** فقط ساختار و رقم کنترلی بررسی می‌شود؛ نمی‌شود فهمید کارت یا کد ملی واقعاً متعلق به کسی است. کد پستی هم فقط از نظر قالب بررسی می‌شود.
-- لیست بانک‌ها (BIN کارت و کد شبا)، پیش‌شماره‌ی اپراتورهای موبایل و پیش‌شماره‌ی استان‌ها بر پایه‌ی اطلاعات عمومی است و ممکن است ناقص یا قدیمی باشد. اگر موردی جا افتاده، PR بدهید (`src/irvalidate/banks.py`).
+| Category | Functions |
+|---|---|
+| Validate (`bool`) | `is_valid_national_id` · `is_valid_legal_id` · `is_valid_card_number` · `is_valid_sheba` · `is_valid_mobile` · `is_valid_landline` · `is_valid_postal_code` |
+| Validate (with reason) | `validate_national_id` · `validate_legal_id` · `validate_card_number` · `validate_sheba` · `validate_mobile` · `validate_landline` · `validate_postal_code` → `ValidationResult` |
+| Look up | `card_bank` · `sheba_bank` · `mobile_operator` · `landline_area` |
+| Normalize | `normalize_card_number` · `normalize_sheba` · `normalize_mobile` · `normalize_landline` |
+| Format / mask | `format_card_number` · `mask_card_number` · `format_sheba` · `format_mobile` · `format_landline` |
+| Digits | `to_english_digits` · `to_persian_digits` |
+| Generate | `generate_national_id` · `generate_legal_id` · `generate_card_number` · `generate_sheba` · `generate_mobile` · `generate_landline` · `generate_postal_code` |
+| Config / errors | `set_default_language` · `get_default_language` · `ValidationResult` · `ValidationError` |
 
-## مشارکت
+Everything is fully type-annotated (`py.typed`).
+
+## ⚠️ Good to know
+
+- **Valid ≠ exists.** Only structure and checksums are verified. The library can't tell whether a card or national ID belongs to a real person, and a postal code is checked for format only.
+- **Pass strings, not numbers.** A national ID like `0013542419` loses its leading zero as an `int`; non-string input is rejected with `not_a_string`.
+- Only the digits `0-9` and Persian/Arabic-Indic digits are accepted; other scripts' digits are rejected.
+- **The lookup tables are best-effort.** Bank BINs and Sheba codes, mobile operator prefixes and province area codes come from public information and may be incomplete or outdated (merged banks, new ranges). Corrections are very welcome.
+- Landlines: area code + 8-digit subscriber number. Old 7-digit numbers and service numbers (like 110) are not supported.
+
+## ❓ FAQ
+
+**Does it call any server?** No. Everything is a pure function: offline, nothing is sent anywhere.
+
+**Why does `is_valid_national_id(13542419)` return `False`?** See "Pass strings, not numbers" above. The leading zeros are already gone by then.
+
+**Can I use it commercially?** Yes, it's MIT-licensed.
+
+**How do I change the language of the messages?** `set_default_language("en")` or `"fa"`. Or read `message_en` / `message_fa` directly.
+
+## 🤝 Contributing
+
+Contributions are very welcome, especially **data fixes** (banks, BINs, operators, area codes) with a source link.
 
 ```bash
 git clone https://github.com/mehdirzfx/irvalidate.git
@@ -201,8 +301,11 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Issue و Pull Request خوشحالمان می‌کند.
+Bank and Sheba data live in [`src/irvalidate/banks.py`](https://github.com/mehdirzfx/irvalidate/blob/main/src/irvalidate/banks.py), mobile operators in `mobile.py` and area codes in `landline.py`.
+See the [changelog](https://github.com/mehdirzfx/irvalidate/blob/main/CHANGELOG.md) for what changed between versions.
 
-## مجوز
+If irvalidate saves you time, a ⭐ on GitHub helps other people find it.
 
-MIT — آزاد برای استفاده‌ی شخصی و تجاری.
+## 📄 License
+
+[MIT](https://github.com/mehdirzfx/irvalidate/blob/main/LICENSE). Free for personal and commercial use.
