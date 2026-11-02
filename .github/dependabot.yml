@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # نسخه‌ی actionهای گیت‌هاب را خودکار به‌روز نگه می‌دارد (PR می‌سازد)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"

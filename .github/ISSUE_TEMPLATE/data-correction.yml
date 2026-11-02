@@ -1,0 +1,52 @@
+name: Data correction / اصلاح داده
+description: A bank BIN, Sheba code, mobile prefix or area code is wrong or missing
+title: "[data] "
+labels: ["data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! A correction is only actionable **with a source**. See [DATA_SOURCES.md](https://github.com/mehdirzfx/irvalidate/blob/main/DATA_SOURCES.md) for what is already confirmed.
+        بدون **منبع** نمی‌تونیم اصلاحیه رو اعمال کنیم؛ اول `DATA_SOURCES.md` رو ببین.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong?
+      options:
+        - Card BIN (first 6 digits)
+        - Sheba bank code
+        - Mobile operator prefix
+        - Landline area code
+        - Bank name or merger status
+        - Postal code rule
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: What does irvalidate say now?
+      description: The value and what the library returns for it (for example the output of `irvalidate card <number>`). Never paste a real full card, account or national ID number; the first 6 digits or the 3-digit code are enough.
+      placeholder: "BIN 123456 -> unknown bank"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it be?
+      placeholder: "BIN 123456 belongs to ... bank"
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source (required)
+      description: A link to an official document if you have one (Central Bank, Shetab, CRA, Iran Post). Otherwise at least two independent public sources. Screenshots of an official notice are welcome.
+    validations:
+      required: true
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Would you open a pull request?
+      options:
+        - label: I can send a PR for this
