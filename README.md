@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/mehdirzfx/irvalidate/main/assets/banner.svg" alt="irvalidate: Validate Iranian data. Zero dependencies." width="100%">
+  <img src="https://github.com/user-attachments/assets/30ff5579-9e61-47ee-9fef-ba389ec63046" alt="irvalidate: Validate Iranian data. Zero dependencies." width="100%">
 </p>
 
 <p align="center">
