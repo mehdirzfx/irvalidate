@@ -1,4 +1,5 @@
 """Global (tiny) configuration: default language of error messages."""
+
 from __future__ import annotations
 
 _SUPPORTED = ("fa", "en")

@@ -5,10 +5,11 @@
 تولیدکننده‌ی تصادفیِ پیش‌فرض برای امنیت مناسب نیست؛ برای نتیجه‌ی تکرارپذیر
 یک ``random.Random(seed)`` به پارامتر ``rng`` بدهید.
 """
+
 from __future__ import annotations
 
 import random
-from typing import Any, Optional, Union
+from typing import cast
 
 from .banks import CARD_BINS, SHEBA_CODES, Bank, resolve_bank
 from .card import luhn_check_digit
@@ -17,18 +18,20 @@ from .mobile import OPERATOR_PREFIXES
 from .national_id import legal_id_check_digit, national_id_check_digit
 from .postal_code import is_valid_postal_code
 
-BankLike = Union[Bank, str, None]
+BankLike = Bank | str | None
 
 
-def _r(rng: Optional[random.Random]) -> Any:
-    return rng if rng is not None else random
+def _r(rng: random.Random | None) -> random.Random:
+    # توابع سطح ماژولِ `random` همان متدهای Random هستند؛ پس اگر rng داده نشود،
+    # `random.seed(...)` سراسری هم همچنان نتیجه را تکرارپذیر می‌کند.
+    return rng if rng is not None else cast(random.Random, random)
 
 
-def _digits(r: Any, n: int) -> str:
+def _digits(r: random.Random, n: int) -> str:
     return "".join(str(r.randrange(10)) for _ in range(n))
 
 
-def generate_national_id(rng: Optional[random.Random] = None) -> str:
+def generate_national_id(rng: random.Random | None = None) -> str:
     """A valid 10-digit national ID."""
     r = _r(rng)
     while True:
@@ -38,7 +41,7 @@ def generate_national_id(rng: Optional[random.Random] = None) -> str:
             return s
 
 
-def generate_legal_id(rng: Optional[random.Random] = None) -> str:
+def generate_legal_id(rng: random.Random | None = None) -> str:
     """A valid 11-digit legal entity ID."""
     r = _r(rng)
     while True:
@@ -48,7 +51,7 @@ def generate_legal_id(rng: Optional[random.Random] = None) -> str:
             return s
 
 
-def generate_card_number(bank: BankLike = None, rng: Optional[random.Random] = None) -> str:
+def generate_card_number(bank: BankLike = None, rng: random.Random | None = None) -> str:
     """A valid 16-digit card number, optionally for a given bank (name or Bank)."""
     r = _r(rng)
     if bank is None:
@@ -62,7 +65,7 @@ def generate_card_number(bank: BankLike = None, rng: Optional[random.Random] = N
     return payload + luhn_check_digit(payload)
 
 
-def generate_sheba(bank: BankLike = None, rng: Optional[random.Random] = None) -> str:
+def generate_sheba(bank: BankLike = None, rng: random.Random | None = None) -> str:
     """A valid Sheba number (``IR`` + 24 digits), optionally for a given bank."""
     r = _r(rng)
     if bank is None:
@@ -77,7 +80,7 @@ def generate_sheba(bank: BankLike = None, rng: Optional[random.Random] = None) -
     return f"IR{check:02d}{bban}"
 
 
-def generate_mobile(operator: Optional[str] = None, rng: Optional[random.Random] = None) -> str:
+def generate_mobile(operator: str | None = None, rng: random.Random | None = None) -> str:
     """A well-formed mobile number (``09xxxxxxxxx``), optionally for an operator."""
     r = _r(rng)
     if operator is None:
@@ -92,7 +95,7 @@ def generate_mobile(operator: Optional[str] = None, rng: Optional[random.Random]
     return r.choice(prefixes) + _digits(r, 7)
 
 
-def generate_postal_code(rng: Optional[random.Random] = None) -> str:
+def generate_postal_code(rng: random.Random | None = None) -> str:
     """A postal code that passes the format rules."""
     r = _r(rng)
     while True:
@@ -105,7 +108,7 @@ def generate_postal_code(rng: Optional[random.Random] = None) -> str:
             return code
 
 
-def generate_landline(area_code: Optional[str] = None, rng: Optional[random.Random] = None) -> str:
+def generate_landline(area_code: str | None = None, rng: random.Random | None = None) -> str:
     """A well-formed landline number; ``area_code`` like ``"021"`` or ``"21"``."""
     r = _r(rng)
     if area_code is None:

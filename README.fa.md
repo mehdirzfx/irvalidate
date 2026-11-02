@@ -27,16 +27,20 @@
 
 ```python
 from irvalidate import (
-    validate_national_id, is_valid_sheba, card_bank, mobile_operator, landline_area,
+    validate_national_id,
+    is_valid_sheba,
+    card_bank,
+    mobile_operator,
+    landline_area,
 )
 
-validate_national_id("۰۰۱۳۵۴۲۴۱۹").value             # '0013542419'
-validate_national_id("1234567890").code              # 'bad_checksum'
-validate_national_id("1234567890").message           # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
+validate_national_id("۰۰۱۳۵۴۲۴۱۹").value  # '0013542419'
+validate_national_id("1234567890").code  # 'bad_checksum'
+validate_national_id("1234567890").message  # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
 is_valid_sheba("IR58 0540 1051 8002 1273 1130 07")  # True
-card_bank("6037-9910-0000-0004").name_fa             # 'بانک ملی ایران'
-mobile_operator("+98 935 123 4567")                  # 'Irancell'
-landline_area("021-22345678").province_fa            # 'تهران'
+card_bank("6037-9910-0000-0004").name_fa  # 'بانک ملی ایران'
+mobile_operator("+98 935 123 4567")  # 'Irancell'
+landline_area("021-22345678").province_fa  # 'تهران'
 ```
 
 ارقام فارسی، فاصله، خط تیره و پیش‌شماره‌ی `+98` بدون هیچ کار اضافه‌ای پشتیبانی می‌شن.
@@ -75,9 +79,9 @@ reason: bad_checksum (national ID is invalid (checksum mismatch))
 |---|---|---|
 | **کد ملی** | ۱۰ رقم، رقم کنترلی، یکسان نبودن همه‌ی ارقام | |
 | **شناسه ملی شرکت** | ۱۱ رقم، رقم کنترلی | |
-| **شماره کارت** | ۱۶ رقم، الگوریتم Luhn | تشخیص بانک از روی ۴۴ پیش‌شماره (BIN) |
-| **شبا** | `IR` + ۲۴ رقم، mod-97 (پیشوند `IR` اختیاریه) | تشخیص بانک از روی ۳۶ کد بانک |
-| **موبایل** | `09…`، `9…`، `98…`، `+98…`، `0098…` | نرمال‌سازی و اپراتور (MCI، Irancell، Rightel، Taliya، Shatel Mobile، Aptel) |
+| **شماره کارت** | ۱۶ رقم، الگوریتم Luhn | تشخیص بانک از روی ۴۹ پیش‌شماره (BIN) |
+| **شبا** | `IR` + ۲۴ رقم، mod-97 (پیشوند `IR` اختیاریه) | تشخیص بانک از روی ۳۷ کد بانک |
+| **موبایل** | `09…`، `9…`، `98…`، `+98…`، `0098…` | نرمال‌سازی و اپراتور (MCI، Irancell، Rightel، Taliya، Shatel Mobile، MVNO عمومی) |
 | **تلفن ثابت** | پیش‌شماره + شماره‌ی ۸ رقمی | تشخیص استان از روی هر ۳۱ پیش‌شماره |
 | **کد پستی** | قواعد قالب ۱۰ رقمی | |
 
@@ -94,7 +98,7 @@ pip install "irvalidate[wtforms]"
 
 یا مستقیم از گیت‌هاب: `pip install git+https://github.com/mehdirzfx/irvalidate.git`
 
-نیازمند پایتون ۳.۹ به بالا. هسته هیچ وابستگی‌ای نداره.
+نیازمند پایتون ۳.۱۰ به بالا. هسته هیچ وابستگی‌ای نداره.
 
 ## 🚀 شروع سریع
 
@@ -102,23 +106,34 @@ pip install "irvalidate[wtforms]"
 
 ```python
 from irvalidate import (
-    is_valid_national_id, is_valid_legal_id, is_valid_card_number,
-    is_valid_sheba, is_valid_mobile, is_valid_landline, is_valid_postal_code,
-    normalize_mobile, normalize_landline,
+    is_valid_national_id,
+    is_valid_legal_id,
+    is_valid_card_number,
+    is_valid_sheba,
+    is_valid_mobile,
+    is_valid_landline,
+    is_valid_postal_code,
+    normalize_mobile,
+    normalize_landline,
+    card_bank,
+    merged_into,
 )
 
-is_valid_national_id("0013542419")           # True
-is_valid_national_id("1234567890")           # False
-is_valid_legal_id("14003778990")             # True
+is_valid_national_id("0013542419")  # True
+is_valid_national_id("1234567890")  # False
+is_valid_legal_id("14003778990")  # True
 is_valid_card_number("6037-9910-0000-0004")  # True
-is_valid_sheba("IR580540105180021273113007") # True
-is_valid_mobile("+98 912 345 6789")          # True
-is_valid_landline("021-22345678")            # True
-is_valid_postal_code("1593764856")           # True
+is_valid_sheba("IR580540105180021273113007")  # True
+is_valid_mobile("+98 912 345 6789")  # True
+is_valid_landline("021-22345678")  # True
+is_valid_postal_code("1593764856")  # True
 
-normalize_mobile("۰۹۱۲۳۴۵۶۷۸۹")               # '09123456789'
+card_bank("6273810000000009").name_fa  # 'بانک انصار'
+merged_into(card_bank("6273810000000009")).name_fa  # 'بانک سپه'  (انصار در سپه ادغام شده)
+
+normalize_mobile("۰۹۱۲۳۴۵۶۷۸۹")  # '09123456789'
 normalize_mobile("09123456789", international=True)  # '+989123456789'
-normalize_landline("+982122345678")          # '02122345678'
+normalize_landline("+982122345678")  # '02122345678'
 ```
 
 ## 🧭 بفهم چرا نامعتبره
@@ -127,17 +142,17 @@ normalize_landline("+982122345678")          # '02122345678'
 from irvalidate import validate_national_id, set_default_language
 
 r = validate_national_id("1234567890")
-bool(r)           # False
-r.code            # 'bad_checksum'
-r.message         # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
-r.message_en      # 'national ID is invalid (checksum mismatch)'
+bool(r)  # False
+r.code  # 'bad_checksum'
+r.message  # 'کد ملی نامعتبر است (رقم کنترلی اشتباه است)'
+r.message_en  # 'national ID is invalid (checksum mismatch)'
 
 ok = validate_national_id("۰۰۱۳۵۴۲۴۱۹")
-ok.value          # '0013542419'
-ok.raise_for_error()   # مقدار نرمال‌شده رو برمی‌گردونه، یا ValidationError (زیرکلاس ValueError) پرتاب می‌کنه
+ok.value  # '0013542419'
+ok.raise_for_error()  # مقدار نرمال‌شده رو برمی‌گردونه، یا ValidationError (زیرکلاس ValueError) پرتاب می‌کنه
 
 set_default_language("en")
-r.message         # 'national ID is invalid (checksum mismatch)'
+r.message  # 'national ID is invalid (checksum mismatch)'
 ```
 
 `r.message` از زبان پیش‌فرض پیروی می‌کنه (به‌صورت پیش‌فرض فارسی). `message_fa` و `message_en` همیشه در دسترسن.
@@ -162,11 +177,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from irvalidate.integrations.pydantic import NationalId, MobileNumber
 
+
 class User(BaseModel):
-    national_id: NationalId   # "۰۰۱۳۵۴۲۴۱۹"       -> "0013542419"
-    mobile: MobileNumber      # "+98 912 345 6789" -> "09123456789"
+    national_id: NationalId  # "۰۰۱۳۵۴۲۴۱۹"       -> "0013542419"
+    mobile: MobileNumber  # "+98 912 345 6789" -> "09123456789"
+
 
 app = FastAPI()
+
 
 @app.post("/users")
 def create(user: User):
@@ -182,6 +200,7 @@ def create(user: User):
 from django.db import models
 from irvalidate.integrations.django import national_id_validator, mobile_validator
 
+
 class Profile(models.Model):
     national_id = models.CharField(max_length=10, validators=[national_id_validator])
     mobile = models.CharField(max_length=14, validators=[mobile_validator])
@@ -196,6 +215,7 @@ class Profile(models.Model):
 from wtforms import Form, StringField
 from irvalidate.integrations.wtforms import NationalId, MobileNumber
 
+
 class SignupForm(Form):
     national_id = StringField(validators=[NationalId()])
     mobile = StringField(validators=[MobileNumber(message="موبایل درست نیست")])
@@ -208,17 +228,23 @@ class SignupForm(Form):
 ```python
 import random
 from irvalidate import (
-    generate_national_id, generate_legal_id, generate_card_number, generate_sheba,
-    generate_mobile, generate_landline, generate_postal_code, is_valid_sheba,
+    generate_national_id,
+    generate_legal_id,
+    generate_card_number,
+    generate_sheba,
+    generate_mobile,
+    generate_landline,
+    generate_postal_code,
+    is_valid_sheba,
 )
 
-generate_national_id()                 # مثلاً 1043321810
-generate_card_number(bank="Mellat")    # کارت معتبر با BIN بانک ملت
-generate_sheba(bank="Parsian")         # شبای معتبر بانک پارسیان
-generate_mobile("Irancell")            # مثلاً 09359141777
-generate_landline("021")               # یه تلفن ثابت تهران
+generate_national_id()  # مثلاً 1043321810
+generate_card_number(bank="Mellat")  # کارت معتبر با BIN بانک ملت
+generate_sheba(bank="Parsian")  # شبای معتبر بانک پارسیان
+generate_mobile("Irancell")  # مثلاً 09359141777
+generate_landline("021")  # یه تلفن ثابت تهران
 
-rng = random.Random(42)                # خروجی تکرارپذیر
+rng = random.Random(42)  # خروجی تکرارپذیر
 is_valid_sheba(generate_sheba(rng=rng))  # True
 ```
 
@@ -228,16 +254,20 @@ is_valid_sheba(generate_sheba(rng=rng))  # True
 
 ```python
 from irvalidate import (
-    mask_card_number, format_card_number, format_sheba,
-    format_mobile, format_landline, to_persian_digits,
+    mask_card_number,
+    format_card_number,
+    format_sheba,
+    format_mobile,
+    format_landline,
+    to_persian_digits,
 )
 
-mask_card_number("6037991000000004")        # '6037-99**-****-0004'
-format_card_number("6037991000000004")      # '6037-9910-0000-0004'
+mask_card_number("6037991000000004")  # '6037-99**-****-0004'
+format_card_number("6037991000000004")  # '6037-9910-0000-0004'
 format_sheba("IR580540105180021273113007")  # 'IR58 0540 1051 8002 1273 1130 07'
-format_mobile("+989123456789")              # '0912 345 6789'
-format_landline("02122345678")              # '021-22345678'
-to_persian_digits("0912")                   # '۰۹۱۲'
+format_mobile("+989123456789")  # '0912 345 6789'
+format_landline("02122345678")  # '021-22345678'
+to_persian_digits("0912")  # '۰۹۱۲'
 ```
 
 ## 💻 خط فرمان
@@ -259,7 +289,7 @@ irvalidate card --generate          # یه شماره کارت تستیِ معت
 |---|---|
 | اعتبارسنجی (`bool`) | `is_valid_national_id` · `is_valid_legal_id` · `is_valid_card_number` · `is_valid_sheba` · `is_valid_mobile` · `is_valid_landline` · `is_valid_postal_code` |
 | اعتبارسنجی (با دلیل) | `validate_national_id` · `validate_legal_id` · `validate_card_number` · `validate_sheba` · `validate_mobile` · `validate_landline` · `validate_postal_code` ← `ValidationResult` |
-| جستجو | `card_bank` · `sheba_bank` · `mobile_operator` · `landline_area` |
+| جستجو | `card_bank` · `sheba_bank` · `merged_into` · `mobile_operator` · `landline_area` |
 | نرمال‌سازی | `normalize_card_number` · `normalize_sheba` · `normalize_mobile` · `normalize_landline` |
 | فرمت / ماسک | `format_card_number` · `mask_card_number` · `format_sheba` · `format_mobile` · `format_landline` |
 | ارقام | `to_english_digits` · `to_persian_digits` |
@@ -273,7 +303,7 @@ irvalidate card --generate          # یه شماره کارت تستیِ معت
 - **معتبر بودن ≠ وجود داشتن.** فقط ساختار و رقم کنترلی بررسی می‌شه. کتابخونه نمی‌تونه بگه کارت یا کد ملی واقعاً مال کسی هست یا نه، و کد پستی هم فقط از نظر قالب چک می‌شه.
 - **رشته بده، نه عدد.** کد ملی‌ای مثل `0013542419` وقتی به `int` تبدیل می‌شه صفر ابتداش رو از دست می‌ده؛ ورودی غیررشته‌ای با `not_a_string` رد می‌شه.
 - فقط ارقام `0-9` و ارقام فارسی/عربی پذیرفته می‌شن؛ ارقام الفباهای دیگه رد می‌شن.
-- **جدول‌های اطلاعاتی حداکثر تلاش ممکنه.** BIN بانک‌ها و کد شبا، پیش‌شماره‌ی اپراتورهای موبایل و پیش‌شماره‌ی استان‌ها از اطلاعات عمومی اومده و ممکنه ناقص یا قدیمی باشه (بانک‌های ادغام‌شده، بازه‌های جدید). اصلاحیه‌ها خیلی خوش‌آمدن.
+- **جدول‌های اطلاعاتی با چند منبع مستقل تطبیق داده شدن، ولی رسمی نیستن.** BIN بانک‌ها، کد شبا، پیش‌شماره‌ی موبایل و پیش‌شماره‌ی استان‌ها با چند منبع عمومی مقایسه شدن، ولی به سند رسمی بانک مرکزی، شتاب یا سازمان تنظیم مقررات دسترسی پیدا نکردم. نام هر بانک همون‌ه که موقع تخصیص BIN بوده (بانک‌های ادغام‌شده با `merged_into` مشخص می‌شن). همه‌ی موردها، اصلاحیه‌ها و پرسش‌های بی‌پاسخ در [`DATA_SOURCES.md`](https://github.com/mehdirzfx/irvalidate/blob/main/DATA_SOURCES.md) ثبت شده. اصلاحیه‌ی همراه با منبع خیلی خوش‌آمده.
 - تلفن ثابت: پیش‌شماره + شماره‌ی ۸ رقمی. شماره‌های قدیمی ۷ رقمی و شماره‌های خدماتی (مثل ۱۱۰) پشتیبانی نمی‌شن.
 
 ## ❓ سؤال‌های رایج
@@ -297,7 +327,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-داده‌ی بانک‌ها و شبا در [`src/irvalidate/banks.py`](https://github.com/mehdirzfx/irvalidate/blob/main/src/irvalidate/banks.py)، اپراتورهای موبایل در `mobile.py` و پیش‌شماره‌ها در `landline.py` هستن.
+داده‌ی بانک‌ها و شبا در [`src/irvalidate/banks.py`](https://github.com/mehdirzfx/irvalidate/blob/main/src/irvalidate/banks.py)، اپراتورهای موبایل در `mobile.py` و پیش‌شماره‌ها در `landline.py` هستن. قبل از شروع [`CONTRIBUTING.md`](https://github.com/mehdirzfx/irvalidate/blob/main/CONTRIBUTING.md) و [`DATA_SOURCES.md`](https://github.com/mehdirzfx/irvalidate/blob/main/DATA_SOURCES.md) رو بخون.
 تغییرات بین نسخه‌ها در [CHANGELOG](https://github.com/mehdirzfx/irvalidate/blob/main/CHANGELOG.md) هست.
 
 اگه irvalidate وقتت رو گرفته، یه ⭐ در گیت‌هاب کمک می‌کنه بقیه هم پیداش کنن.

@@ -33,7 +33,9 @@ def test_normalize():
     assert normalize_sheba("xx") is None
 
 
-@pytest.mark.parametrize("code,name", [("017", "Bank Melli Iran"), ("012", "Bank Mellat"), ("054", "Parsian Bank")])
+@pytest.mark.parametrize(
+    "code,name", [("017", "Bank Melli Iran"), ("012", "Bank Mellat"), ("054", "Parsian Bank")]
+)
 def test_bank_lookup(code, name):
     s = make_sheba(code)
     assert is_valid_sheba(s)

@@ -1,4 +1,5 @@
 """کد ملی (۱۰ رقمی حقیقی) و شناسه ملی (۱۱ رقمی حقوقی)."""
+
 from __future__ import annotations
 
 from ._result import ValidationResult, fail, success
@@ -27,9 +28,9 @@ def validate_national_id(value: object) -> ValidationResult:
 
     ورودی باید رشته باشد (نه عدد) تا صفرهای ابتدایی از بین نرود.
     """
-    s, err = prepare_digits(value, "national_id", 10)
-    if err or s is None:
-        return err  # type: ignore[return-value]
+    s = prepare_digits(value, "national_id", 10)
+    if isinstance(s, ValidationResult):
+        return s
     if len(set(s)) == 1:  # 0000000000, 1111111111, ...
         return fail("all_same_digits", "national_id")
     if s[9] != national_id_check_digit(s[:9]):
@@ -39,9 +40,9 @@ def validate_national_id(value: object) -> ValidationResult:
 
 def validate_legal_id(value: object) -> ValidationResult:
     """Validate an 11-digit legal entity ID (شناسه ملی اشخاص حقوقی)."""
-    s, err = prepare_digits(value, "legal_id", 11)
-    if err or s is None:
-        return err  # type: ignore[return-value]
+    s = prepare_digits(value, "legal_id", 11)
+    if isinstance(s, ValidationResult):
+        return s
     if len(set(s)) == 1:
         return fail("all_same_digits", "legal_id")
     if s[10] != legal_id_check_digit(s[:10]):

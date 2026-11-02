@@ -1,8 +1,8 @@
 """شماره موبایل ایران."""
+
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Optional
 
 from ._digits import clean, is_ascii_digits
 from ._result import ValidationResult, fail, success
@@ -10,14 +10,14 @@ from ._result import ValidationResult, fail, success
 _RE = re.compile(r"^(?:\+98|0098|98|0)?(9[0-9]{9})$")
 
 # پیش‌شماره‌های شناخته‌شده (بر اساس تخصیص عمومی؛ ممکن است ناقص باشد)
-OPERATOR_PREFIXES: Dict[str, List[str]] = {
-    "MCI": ["091" + str(i) for i in range(10)] + ["0990", "0991", "0992", "0993", "0994"],
+OPERATOR_PREFIXES: dict[str, list[str]] = {
+    "MCI": ["091" + str(i) for i in range(10)] + ["0990", "0991", "0992", "0993", "0994", "0996"],
     "Irancell": ["0930", "0933", "0935", "0936", "0937", "0938", "0939", "0941"]
     + ["090" + str(i) for i in range(6)],
     "Rightel": ["0920", "0921", "0922"],
     "Taliya": ["0932"],
     "Shatel Mobile": ["0998"],
-    "Aptel": ["0999"],
+    "MVNO": ["0999"],  # اپراتورهای مجازی (چند اپراتور با پیش‌شماره‌ی ۰۹۹۹)
 }
 _PREFIX_TO_OPERATOR = {p: op for op, prefixes in OPERATOR_PREFIXES.items() for p in prefixes}
 
@@ -42,7 +42,7 @@ def validate_mobile(value: object) -> ValidationResult:
     return success("0" + m.group(1))
 
 
-def normalize_mobile(value: object, international: bool = False) -> Optional[str]:
+def normalize_mobile(value: object, international: bool = False) -> str | None:
     """Normalize to ``09xxxxxxxxx`` (or ``+989xxxxxxxxx`` if ``international``)."""
     res = validate_mobile(value)
     if not res.ok or res.value is None:
@@ -55,7 +55,7 @@ def is_valid_mobile(value: object) -> bool:
     return validate_mobile(value).ok
 
 
-def mobile_operator(value: object) -> Optional[str]:
+def mobile_operator(value: object) -> str | None:
     """Return the operator name (MCI, Irancell, Rightel, ...) or None if unknown."""
     n = normalize_mobile(value)
     if n is None:
@@ -63,7 +63,7 @@ def mobile_operator(value: object) -> Optional[str]:
     return _PREFIX_TO_OPERATOR.get(n[:4])
 
 
-def format_mobile(value: object, sep: str = " ") -> Optional[str]:
+def format_mobile(value: object, sep: str = " ") -> str | None:
     """09123456789 -> '0912 345 6789' (None if malformed)."""
     n = normalize_mobile(value)
     if n is None:

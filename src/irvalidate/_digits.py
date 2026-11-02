@@ -1,7 +1,6 @@
 """Digit normalization helpers (Persian / Arabic-Indic <-> ASCII)."""
-from __future__ import annotations
 
-from typing import Optional
+from __future__ import annotations
 
 _TO_ENGLISH = str.maketrans(
     {
@@ -25,7 +24,7 @@ def to_persian_digits(text: str) -> str:
     return to_english_digits(text).translate(_TO_PERSIAN)
 
 
-def clean(value: object) -> Optional[str]:
+def clean(value: object) -> str | None:
     """Return ``value`` with English digits and no separators, or None if not a str."""
     if not isinstance(value, str):
         return None

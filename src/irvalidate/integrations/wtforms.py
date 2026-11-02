@@ -11,14 +11,18 @@
 
 برای فیلد اختیاری، ``wtforms.validators.Optional()`` را قبل از این‌ها بگذارید.
 """
+
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 try:
     from wtforms.validators import ValidationError
 except ImportError as exc:  # pragma: no cover
-    raise ImportError('WTForms is required for this module: pip install "irvalidate[wtforms]"') from exc
+    raise ImportError(
+        'WTForms is required for this module: pip install "irvalidate[wtforms]"'
+    ) from exc
 
 from .._result import ValidationResult
 from ..card import validate_card_number
@@ -32,11 +36,11 @@ from ..sheba import validate_sheba
 class _Base:
     _validate: Callable[[object], ValidationResult]
 
-    def __init__(self, message: Optional[str] = None) -> None:
+    def __init__(self, message: str | None = None) -> None:
         self.message = message
 
     def __call__(self, form: Any, field: Any) -> None:
-        result = type(self)._validate(field.data)  # type: ignore[call-arg, arg-type]
+        result = type(self)._validate(field.data)
         if not result.ok:
             raise ValidationError(self.message or result.message)
 

@@ -12,14 +12,17 @@
 توابع در سطح ماژول تعریف شده‌اند تا در migrationها قابل serialize باشند.
 کد خطا (مثلاً ``bad_checksum``) در ``ValidationError.code`` قرار می‌گیرد.
 """
+
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 try:
     from django.core.exceptions import ValidationError
 except ImportError as exc:  # pragma: no cover
-    raise ImportError('Django is required for this module: pip install "irvalidate[django]"') from exc
+    raise ImportError(
+        'Django is required for this module: pip install "irvalidate[django]"'
+    ) from exc
 
 from .._result import ValidationResult
 from ..card import validate_card_number

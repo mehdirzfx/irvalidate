@@ -1,8 +1,8 @@
 """Validation results with machine-readable codes and fa/en messages."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from ._config import get_default_language
 
@@ -43,12 +43,12 @@ _TEMPLATES = {
 class ValidationError(ValueError):
     """Raised by :meth:`ValidationResult.raise_for_error`."""
 
-    def __init__(self, result: "ValidationResult") -> None:
+    def __init__(self, result: ValidationResult) -> None:
         super().__init__(result.message)
         self.result = result
 
     @property
-    def code(self) -> Optional[str]:
+    def code(self) -> str | None:
         return self.result.code
 
 
@@ -63,10 +63,10 @@ class ValidationResult:
     """
 
     ok: bool
-    code: Optional[str] = None
+    code: str | None = None
     message_fa: str = ""
     message_en: str = ""
-    value: Optional[str] = None
+    value: str | None = None
 
     def __bool__(self) -> bool:
         return self.ok

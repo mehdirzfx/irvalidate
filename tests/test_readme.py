@@ -1,5 +1,6 @@
 """Keeps the READMEs honest: every ``# <literal>`` comment in a python example
 must equal what the code really returns."""
+
 import ast
 import re
 from pathlib import Path
@@ -34,7 +35,9 @@ def _check(path: Path) -> int:
                     pass
             if is_literal:
                 got = eval(compile(ast.Expression(stmt.value), str(path), "eval"), ns)
-                assert got == expected, f"{path.name}: {ast.get_source_segment(src, stmt)!r} -> {got!r}, README says {expected!r}"
+                assert got == expected, (
+                    f"{path.name}: {ast.get_source_segment(src, stmt)!r} -> {got!r}, README says {expected!r}"
+                )
                 checked += 1
             else:
                 exec(compile(ast.Module([stmt], []), str(path), "exec"), ns)

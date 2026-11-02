@@ -1,11 +1,13 @@
 """Command line: ``irvalidate <kind> <value>`` or ``irvalidate <kind> --generate``."""
+
 from __future__ import annotations
 
 import argparse
 import sys
-from typing import List, Optional
+from collections.abc import Callable
 
 from . import (
+    ValidationResult,
     card_bank,
     generate_card_number,
     generate_landline,
@@ -26,7 +28,7 @@ from . import (
     validate_sheba,
 )
 
-_VALIDATE = {
+_VALIDATE: dict[str, Callable[[object], ValidationResult]] = {
     "national-id": validate_national_id,
     "legal-id": validate_legal_id,
     "card": validate_card_number,
@@ -36,7 +38,7 @@ _VALIDATE = {
     "postal-code": validate_postal_code,
 }
 
-_GENERATE = {
+_GENERATE: dict[str, Callable[[], str]] = {
     "national-id": generate_national_id,
     "legal-id": generate_legal_id,
     "card": generate_card_number,
@@ -47,7 +49,7 @@ _GENERATE = {
 }
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="irvalidate", description="Validate (or generate test) Iranian data."
     )
@@ -90,4 +92,4 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main())  # pragma: no cover

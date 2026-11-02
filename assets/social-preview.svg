@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="irvalidate: Validate Iranian data. Zero dependencies.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#18284a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect y="0" width="427" height="14" fill="#239f40"/>
+  <rect x="427" y="0" width="426" height="14" fill="#ffffff"/>
+  <rect x="853" y="0" width="427" height="14" fill="#da0000"/>
+
+  <g font-family="SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace">
+    <text x="70" y="250" font-size="110" font-weight="700"><tspan fill="#3ddc84">ir</tspan><tspan fill="#ffffff">validate</tspan></text>
+  </g>
+  <text x="72" y="312" font-size="32" fill="#c9d4e5" font-family="Segoe UI, Helvetica, Arial, sans-serif">Validate Iranian data. Zero dependencies.</text>
+
+  <g font-family="SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="20" fill="#e6edf7">
+    <rect x="72" y="346" width="168" height="40" rx="20" fill="#22345c"/><text x="92" y="373">National ID</text>
+    <rect x="250" y="346" width="84" height="40" rx="20" fill="#22345c"/><text x="270" y="373">Card</text>
+    <rect x="344" y="346" width="96" height="40" rx="20" fill="#22345c"/><text x="364" y="373">Sheba</text>
+    <rect x="450" y="346" width="108" height="40" rx="20" fill="#22345c"/><text x="470" y="373">Mobile</text>
+    <rect x="72" y="396" width="132" height="40" rx="20" fill="#22345c"/><text x="92" y="423">Landline</text>
+    <rect x="214" y="396" width="168" height="40" rx="20" fill="#22345c"/><text x="234" y="423">Postal code</text>
+  </g>
+
+  <g font-family="SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="30">
+    <rect x="72" y="500" width="470" height="62" rx="14" fill="#080d18" stroke="#3ddc84" stroke-width="2"/>
+    <text x="96" y="541"><tspan fill="#6b7a99">$ </tspan><tspan fill="#3ddc84">pip install irvalidate</tspan></text>
+  </g>
+
+  <g>
+    <rect x="780" y="130" width="440" height="330" rx="18" fill="#080d18" stroke="#2c3f6b" stroke-width="3"/>
+    <circle cx="812" cy="164" r="8" fill="#ff5f56"/><circle cx="840" cy="164" r="8" fill="#ffbd2e"/><circle cx="868" cy="164" r="8" fill="#27c93f"/>
+    <g font-family="SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="24">
+      <text x="812" y="228"><tspan fill="#6b7a99">&gt;&gt;&gt; </tspan><tspan fill="#e6edf7">r = </tspan><tspan fill="#7dd3fc">validate_sheba</tspan><tspan fill="#e6edf7">(x)</tspan></text>
+      <text x="812" y="278"><tspan fill="#6b7a99">&gt;&gt;&gt; </tspan><tspan fill="#e6edf7">r.ok</tspan></text>
+      <text x="812" y="320"><tspan fill="#ff6b6b">False</tspan></text>
+      <text x="812" y="370"><tspan fill="#6b7a99">&gt;&gt;&gt; </tspan><tspan fill="#e6edf7">r.code</tspan></text>
+      <text x="812" y="412"><tspan fill="#fbbf24">'bad_checksum'</tspan></text>
+    </g>
+  </g>
+</svg>

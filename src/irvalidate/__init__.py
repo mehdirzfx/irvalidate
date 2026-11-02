@@ -1,8 +1,9 @@
 """irvalidate — اعتبارسنجی داده‌های ایرانی (کد ملی، کارت، شبا، موبایل، تلفن ثابت، کد پستی)."""
+
 from ._config import get_default_language, set_default_language
 from ._digits import to_english_digits, to_persian_digits
 from ._result import ValidationError, ValidationResult
-from .banks import Bank
+from .banks import Bank, merged_into
 from .card import (
     card_bank,
     format_card_number,
@@ -50,7 +51,7 @@ from .sheba import (
     validate_sheba,
 )
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 __all__ = [
     "AreaCode",
@@ -79,6 +80,7 @@ __all__ = [
     "is_valid_sheba",
     "landline_area",
     "mask_card_number",
+    "merged_into",
     "mobile_operator",
     "normalize_card_number",
     "normalize_landline",

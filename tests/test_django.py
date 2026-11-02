@@ -33,8 +33,16 @@ def test_invalid_raises_with_code_and_message():
 
 
 @pytest.mark.parametrize(
-    "fn", [national_id_validator, legal_id_validator, card_number_validator, sheba_validator,
-           mobile_validator, postal_code_validator, landline_validator]
+    "fn",
+    [
+        national_id_validator,
+        legal_id_validator,
+        card_number_validator,
+        sheba_validator,
+        mobile_validator,
+        postal_code_validator,
+        landline_validator,
+    ],
 )
 def test_all_validators_reject_garbage(fn):
     with pytest.raises(ValidationError):

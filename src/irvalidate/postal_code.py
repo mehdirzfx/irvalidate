@@ -1,25 +1,23 @@
 """کد پستی ۱۰ رقمی."""
-from __future__ import annotations
 
-import re
+from __future__ import annotations
 
 from ._result import ValidationResult, fail, success
 from ._validate import prepare_digits
-
-# قاعده‌ی رایج: رقم‌های اول تا چهارم صفر و ۲ نیستند، رقم پنجم ۰/۲/۵ نیست،
-# رقم‌های آخر ۲ ندارند، و چهار رقم اول یکسان نیست.
-_RE = re.compile(r"^(?!([0-9])\1{3})[13-9]{4}[1346-9][013-9]{5}$")
 
 
 def validate_postal_code(value: object) -> ValidationResult:
     """Validate the format of a 10-digit postal code (کد پستی).
 
-    توجه: فقط ساختار کد را بررسی می‌کند، نه وجود واقعی آدرس.
+    فقط قواعد مستند بررسی می‌شود: ۱۰ رقم؛ ارقام ۰ و ۲ در ۵ رقم اول (کد رهسپاری)
+    به‌کار نمی‌روند؛ همه‌ی ارقام یکسان نباشند. وجود واقعی آدرس بررسی نمی‌شود.
     """
-    s, err = prepare_digits(value, "postal_code", 10)
-    if err or s is None:
-        return err  # type: ignore[return-value]
-    if not _RE.match(s):
+    s = prepare_digits(value, "postal_code", 10)
+    if isinstance(s, ValidationResult):
+        return s
+    if len(set(s)) == 1:
+        return fail("all_same_digits", "postal_code")
+    if "0" in s[:5] or "2" in s[:5]:
         return fail("invalid_format", "postal_code")
     return success(s)
 

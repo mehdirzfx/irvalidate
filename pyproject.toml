@@ -7,7 +7,7 @@ name = "irvalidate"
 dynamic = ["version"]
 description = "Validation of Iranian data: national ID, card number, Sheba (IBAN), mobile, postal code. اعتبارسنجی کد ملی، کارت، شبا، موبایل، تلفن ثابت و کد پستی"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "mehdirzfx", email = "semicalon@outlook.com" }]
 keywords = ["pydantic", "django", "fastapi", "iran", "persian", "farsi", "validation", "national-id", "sheba", "iban", "کد ملی", "شبا"]
@@ -17,11 +17,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: Persian",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 dependencies = []
@@ -30,7 +30,18 @@ dependencies = []
 pydantic = ["pydantic>=2"]
 django = ["django>=4.2"]
 wtforms = ["wtforms>=3"]
-dev = ["pytest>=7", "pydantic>=2", "django>=4.2", "wtforms>=3", "build", "twine"]
+dev = [
+    "pytest>=7",
+    "pytest-cov>=5",
+    "hypothesis>=6.100",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pydantic>=2",
+    "django>=4.2",
+    "wtforms>=3",
+    "build",
+    "twine",
+]
 
 [project.scripts]
 irvalidate = "irvalidate.cli:main"
@@ -46,3 +57,31 @@ path = "src/irvalidate/__init__.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]  # کامنت‌های فارسی و نمونه‌داده‌های بلند
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/irvalidate"]
+
+[[tool.mypy.overrides]]
+module = ["django.*", "wtforms.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["irvalidate"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 95

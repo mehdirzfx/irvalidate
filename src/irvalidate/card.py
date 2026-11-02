@@ -1,7 +1,6 @@
 """شماره کارت بانکی ۱۶ رقمی."""
-from __future__ import annotations
 
-from typing import Optional
+from __future__ import annotations
 
 from ._result import ValidationResult, fail, success
 from ._validate import prepare_digits
@@ -35,9 +34,9 @@ def luhn_check_digit(payload: str) -> str:
 
 def validate_card_number(value: object) -> ValidationResult:
     """Validate a 16-digit card number (Luhn) and say why it failed, if so."""
-    s, err = prepare_digits(value, "card", 16)
-    if err or s is None:
-        return err  # type: ignore[return-value]
+    s = prepare_digits(value, "card", 16)
+    if isinstance(s, ValidationResult):
+        return s
     if len(set(s)) == 1:
         return fail("all_same_digits", "card")
     if not _luhn(s):
@@ -45,13 +44,13 @@ def validate_card_number(value: object) -> ValidationResult:
     return success(s)
 
 
-def normalize_card_number(value: object) -> Optional[str]:
+def normalize_card_number(value: object) -> str | None:
     """Return the 16-digit card number (English digits) or None if malformed.
 
     فقط ساختار را بررسی می‌کند، نه رقم کنترلی.
     """
-    s, _ = prepare_digits(value, "card", 16)
-    return s
+    s = prepare_digits(value, "card", 16)
+    return None if isinstance(s, ValidationResult) else s
 
 
 def is_valid_card_number(value: object) -> bool:
@@ -59,7 +58,7 @@ def is_valid_card_number(value: object) -> bool:
     return validate_card_number(value).ok
 
 
-def card_bank(value: object) -> Optional[Bank]:
+def card_bank(value: object) -> Bank | None:
     """Return the issuing bank of a valid card number, or None if unknown/invalid."""
     res = validate_card_number(value)
     if not res.ok or res.value is None:
@@ -67,7 +66,7 @@ def card_bank(value: object) -> Optional[Bank]:
     return CARD_BINS.get(res.value[:6])
 
 
-def format_card_number(value: object, sep: str = "-") -> Optional[str]:
+def format_card_number(value: object, sep: str = "-") -> str | None:
     """6037991234567890 -> 6037-9912-3456-7890"""
     s = normalize_card_number(value)
     if s is None:
@@ -81,7 +80,7 @@ def mask_card_number(
     sep: str = "-",
     keep_first: int = 6,
     keep_last: int = 4,
-) -> Optional[str]:
+) -> str | None:
     """6037991000000004 -> 6037-99**-****-0004 (None if malformed)."""
     s = normalize_card_number(value)
     if s is None:

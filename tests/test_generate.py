@@ -50,7 +50,12 @@ def test_reproducible_with_seed():
 
 @pytest.mark.parametrize(
     "name,expected",
-    [("Mellat", "Bank Mellat"), ("melli", "Bank Melli Iran"), ("بانک ملت", "Bank Mellat"), ("Parsian", "Parsian Bank")],
+    [
+        ("Mellat", "Bank Mellat"),
+        ("melli", "Bank Melli Iran"),
+        ("بانک ملت", "Bank Mellat"),
+        ("Parsian", "Parsian Bank"),
+    ],
 )
 def test_bank_selection(name, expected):
     rng = random.Random(7)

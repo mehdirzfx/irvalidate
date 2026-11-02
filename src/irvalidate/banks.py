@@ -1,7 +1,8 @@
 """Iranian bank metadata (best-effort, based on public BIN / Sheba prefixes)."""
+
 from __future__ import annotations
 
-from typing import Dict, NamedTuple
+from typing import NamedTuple
 
 
 class Bank(NamedTuple):
@@ -45,13 +46,16 @@ RESALAT = Bank("بانک قرض‌الحسنه رسالت", "Resalat Bank")
 IRAN_ZAMIN = Bank("بانک ایران زمین", "Iran Zamin Bank")
 MARKAZI = Bank("بانک مرکزی", "Central Bank of Iran")
 KHAVARMIANEH = Bank("بانک خاورمیانه", "Middle East Bank")
+IRAN_VENEZUELA = Bank("بانک ایران و ونزوئلا", "Iran-Venezuela Bilateral Bank")
 
 # شش رقم اول شماره کارت (BIN)
-CARD_BINS: Dict[str, Bank] = {
+CARD_BINS: dict[str, Bank] = {
     "603799": MELLI,
+    "170019": MELLI,
     "589210": SEPAH,
     "603769": SADERAT,
     "627648": TOSEE_SADERAT,
+    "207177": TOSEE_SADERAT,
     "627961": SANAT_MADAN,
     "603770": KESHAVARZI,
     "639217": KESHAVARZI,
@@ -83,6 +87,7 @@ CARD_BINS: Dict[str, Bank] = {
     "639599": GHAVAMIN,
     "606373": MEHR_IRAN,
     "505416": GARDESHGARI,
+    "505426": GARDESHGARI,
     "636949": HEKMAT,
     "628157": TOSEE_ETEBARI,
     "505801": KOSAR,
@@ -91,11 +96,13 @@ CARD_BINS: Dict[str, Bank] = {
     "504172": RESALAT,
     "505785": IRAN_ZAMIN,
     "636795": MARKAZI,
+    "636797": MARKAZI,
     "585947": KHAVARMIANEH,
+    "505809": KHAVARMIANEH,
 }
 
 # کد بانک در شبا (رقم‌های پنجم تا هفتم)
-SHEBA_CODES: Dict[str, Bank] = {
+SHEBA_CODES: dict[str, Bank] = {
     "010": MARKAZI,
     "011": SANAT_MADAN,
     "012": MELLAT,
@@ -130,21 +137,22 @@ SHEBA_CODES: Dict[str, Bank] = {
     "073": KOSAR,
     "075": MELAL,
     "078": KHAVARMIANEH,
+    "079": MEHR_EGHTESAD,
     "080": NOOR,
-    "090": MEHR_EGHTESAD,
+    "095": IRAN_VENEZUELA,
 }
 
 
-def all_banks() -> "list[Bank]":
+def all_banks() -> list[Bank]:
     """Unique banks known from card BINs and Sheba codes (stable order)."""
-    seen: "list[Bank]" = []
+    seen: list[Bank] = []
     for bank in list(CARD_BINS.values()) + list(SHEBA_CODES.values()):
         if bank not in seen:
             seen.append(bank)
     return seen
 
 
-def resolve_bank(bank: "Bank | str") -> Bank:
+def resolve_bank(bank: Bank | str) -> Bank:
     """Find a :class:`Bank` from a Bank object or a (partial) English/Persian name.
 
     Raises ``ValueError`` if nothing matches or if the name is ambiguous.
@@ -166,3 +174,22 @@ def resolve_bank(bank: "Bank | str") -> Bank:
         raise ValueError(f"unknown bank: {bank!r}")
     names = ", ".join(b.name_en for b in partial)
     raise ValueError(f"ambiguous bank {bank!r}; matches: {names}")
+
+
+# بانک‌های ادغام‌شده ← بانک پذیرنده. کارت و شبای این بانک‌ها همچنان معتبر است؛
+# فقط پردازش آن‌ها به بانک پذیرنده منتقل شده است.
+MERGED_INTO: dict[Bank, Bank] = {
+    ANSAR: SEPAH,
+    GHAVAMIN: SEPAH,
+    HEKMAT: SEPAH,
+    MEHR_EGHTESAD: SEPAH,
+    KOSAR: SEPAH,
+    NOOR: MELLI,
+}
+
+
+def merged_into(bank: Bank | None) -> Bank | None:
+    """Return the bank that absorbed ``bank`` (e.g. Ansar -> Sepah), or None."""
+    if bank is None:
+        return None
+    return MERGED_INTO.get(bank)

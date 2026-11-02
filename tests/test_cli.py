@@ -29,3 +29,25 @@ def test_cli_generate_is_valid(capsys):
         generated = capsys.readouterr().out.strip()
         assert main([kind, generated]) == 0
         capsys.readouterr()
+
+
+def test_cli_requires_a_value_unless_generating(capsys):
+    import pytest
+
+    with pytest.raises(SystemExit) as exc:
+        main(["card"])
+    assert exc.value.code == 2
+    assert "a value is required" in capsys.readouterr().err
+
+
+def test_python_dash_m_entry_point(monkeypatch, capsys):
+    import runpy
+    import sys
+
+    import pytest
+
+    monkeypatch.setattr(sys, "argv", ["irvalidate", "national-id", "0013542419"])
+    with pytest.raises(SystemExit) as exc:
+        runpy.run_module("irvalidate", run_name="__main__")
+    assert exc.value.code == 0
+    assert capsys.readouterr().out.strip() == "valid"

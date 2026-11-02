@@ -12,9 +12,11 @@
 مقدار خروجی همیشه نرمال‌شده است (ارقام انگلیسی، بدون فاصله و خط تیره).
 پیام خطا طبق ``irvalidate.set_default_language`` فارسی یا انگلیسی است.
 """
+
 from __future__ import annotations
 
-from typing import Annotated, Callable
+from collections.abc import Callable
+from typing import Annotated
 
 try:
     from pydantic import AfterValidator

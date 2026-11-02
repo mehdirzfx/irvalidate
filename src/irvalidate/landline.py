@@ -1,8 +1,9 @@
 """تلفن ثابت و پیش‌شماره‌ی استان‌ها."""
+
 from __future__ import annotations
 
 import re
-from typing import Dict, NamedTuple, Optional
+from typing import NamedTuple
 
 from ._digits import clean, is_ascii_digits
 from ._result import ValidationResult, fail, success
@@ -48,7 +49,7 @@ _ROWS = [
     ("087", "کردستان", "Kurdistan"),
 ]
 
-AREA_CODES: Dict[str, AreaCode] = {c: AreaCode(c, fa, en) for c, fa, en in _ROWS}
+AREA_CODES: dict[str, AreaCode] = {c: AreaCode(c, fa, en) for c, fa, en in _ROWS}
 
 # پیش‌شماره (۲ رقم بدون صفر) + شماره‌ی مشترک ۸ رقمی
 _RE = re.compile(r"^(?:\+98|0098|98|0)?([1-8][0-9])([0-9]{8})$")
@@ -74,8 +75,6 @@ def validate_landline(value: object) -> ValidationResult:
     area = "0" + m.group(1)
     if area not in AREA_CODES:
         return fail("unknown_area_code", "landline")
-    if m.group(2)[0] in "01":  # شماره‌ی مشترک با ۰ یا ۱ شروع نمی‌شود
-        return fail("invalid_format", "landline")
     return success(area + m.group(2))
 
 
@@ -84,7 +83,7 @@ def is_valid_landline(value: object) -> bool:
     return validate_landline(value).ok
 
 
-def normalize_landline(value: object, international: bool = False) -> Optional[str]:
+def normalize_landline(value: object, international: bool = False) -> str | None:
     """Normalize to ``021xxxxxxxx`` (or ``+9821xxxxxxxx`` if ``international``)."""
     res = validate_landline(value)
     if not res.ok or res.value is None:
@@ -92,13 +91,13 @@ def normalize_landline(value: object, international: bool = False) -> Optional[s
     return "+98" + res.value[1:] if international else res.value
 
 
-def landline_area(value: object) -> Optional[AreaCode]:
+def landline_area(value: object) -> AreaCode | None:
     """Return the province / area code info of a valid landline number."""
     n = normalize_landline(value)
     return None if n is None else AREA_CODES.get(n[:3])
 
 
-def format_landline(value: object, sep: str = "-") -> Optional[str]:
+def format_landline(value: object, sep: str = "-") -> str | None:
     """02112345678 -> '021-12345678' (None if invalid)."""
     n = normalize_landline(value)
     if n is None:

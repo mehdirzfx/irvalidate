@@ -10,7 +10,9 @@ def test_valid_card_and_bank():
     assert card_bank("6037991000000004").name_en == "Bank Melli Iran"
 
 
-@pytest.mark.parametrize("v", ["6037991000000005", "603799100000000", "0000000000000000", "abcd", None, 6037991000000004])
+@pytest.mark.parametrize(
+    "v", ["6037991000000005", "603799100000000", "0000000000000000", "abcd", None, 6037991000000004]
+)
 def test_invalid_card(v):
     assert not is_valid_card_number(v)
     assert card_bank(v) is None
