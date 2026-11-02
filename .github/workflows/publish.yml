@@ -15,7 +15,7 @@ jobs:
       id-token: write   # Trusted Publishing (بدون نیاز به توکن)
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Check that the release tag matches the package version
